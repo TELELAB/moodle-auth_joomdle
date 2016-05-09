@@ -1,4 +1,28 @@
-<?PHP // $Id: version.php
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Joomdle certificate viewer helper
+ *
+ * @package    auth_joomdle
+ * @copyright  Mark Nelson <markn@moodle.com>
+ * @copyright  2009 Qontori Pte Ltd  (changes for Joomdle integration)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 
 require_once('../../config.php');
 require_once('../../mod/certificate/lib.php');
@@ -32,7 +56,7 @@ $USER = get_complete_user_data('username', $username);
 complete_user_login($USER);
 
 require_login($course->id, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 require_capability('mod/certificate:view', $context);
 
 
@@ -47,7 +71,9 @@ $PAGE->set_context($context);
 $PAGE->set_cm($cm);
 
 // Create new certrecord
-certificate_prepare_issue($course, $USER, $certificate);
+//certificate_prepare_issue($course, $USER, $certificate);
+//$certrecord = certificate_get_issue($course, $USER, $certificate, $cm);
+
 
 // Get previous certrecord
 $sql = "SELECT MAX(timecreated) AS latest " .
@@ -71,6 +97,7 @@ $filename = clean_filename($certificate->name.'.pdf');
 // Load the specific certificatetype
 require ("$CFG->dirroot/mod/certificate/type/$certificate->certificatetype/certificate.php");
 
+/*
 if ($certificate->reissuecert) { // Reissue certificate every time
     if (empty($action)) {
         view_header($course, $certificate, $cm);
@@ -98,6 +125,7 @@ if ($certificate->reissuecert) { // Reissue certificate every time
     }
     certificate_issue($course, $certificate, $certrecord, $cm); // update certrecord as issued
 } else if ($certrecord->certdate > 0) { // Review certificate
+*/
     if (empty($action)) {
         view_header($course, $certificate, $cm);
         $link = new moodle_url('/mod/certificate/view.php?id='.$cm->id.'&action=get');
@@ -111,6 +139,7 @@ if ($certificate->reissuecert) { // Reissue certificate every time
         echo $OUTPUT->footer($course);
         exit;
     }
+/*
 } else if ($certrecord->certdate == 0) { //Create certificate
     if (empty($action)) {
         view_header($course, $certificate, $cm);
@@ -133,9 +162,9 @@ if ($certificate->reissuecert) { // Reissue certificate every time
         echo $OUTPUT->footer($course);
         exit;
     }
-    certificate_issue($course, $certificate, $certrecord, $cm); // update certrecord as issued
+   // certificate_issue($course, $certificate, $certrecord, $cm); // update certrecord as issued
 }
-
+*/
 if ($action) {
     // Output to pdf
     if ($certificate->savecert == 1){

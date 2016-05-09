@@ -1,16 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Antonio Duran
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package joomdle
+ * Joomdle login landing script
  *
- * Authentication Plugin: Joomdle XMLRPC auth
- *
- * SSO with XMLRPC used to connect with Joomla
- *
- * 2008-11-01  File created.
+ * @package    auth_joomdle
+ * @copyright  2009 Qontori Pte Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 
 require_once dirname(dirname(dirname(__FILE__))) . '/config.php';
 //require_once $CFG->dirroot . '/mnet/xmlrpc/client.php';
@@ -18,16 +29,8 @@ require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->dirroot.'/auth/joomdle/auth.php');
 
 // it gives a warning if no context set, I guess it does nor matter which we use
-$PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
-/*
-if (!$site = get_site()) {
-    print_error('mnet_session_prohibited', 'mnet', '', '');
-}
+$PAGE->set_context(context_system::instance());
 
-if (!is_enabled_auth('mnet')) {
-    error('mnet is disabled');
-}
-*/
 // grab the GET params
 $token         = optional_param('token',  '',  PARAM_TEXT);
 $username = optional_param('username',   '',   PARAM_TEXT);
@@ -73,7 +76,7 @@ if (($username != 'guest') && (!isloggedin()))
 				else
 				{
 					/* If the user does not exists and we don't have to create it, we are done */
-					$redirect_url = get_config (NULL, 'joomla_url');
+					$redirect_url = get_config ('auth/joomdle', 'joomla_url');
 					redirect($redirect_url);
 				}
 
@@ -81,17 +84,12 @@ if (($username != 'guest') && (!isloggedin()))
 			$user = get_complete_user_data('username', $username);
 			complete_user_login($user);
 
-			/*
-			if (!empty($localuser->mnet_foreign_host_array)) {
-			    $user->mnet_foreign_host_array = $localuser->mnet_foreign_host_array;
-			}
-			*/
 	} //logged
 } //username != guest
 			// redirect
 			if ($use_wrapper)
 			{
-				$redirect_url = get_config (NULL, 'joomla_url');
+				$redirect_url = get_config ('auth/joomdle', 'joomla_url');
 				switch ($mtype) 
 				{
 					case "event":
@@ -137,7 +135,7 @@ if (($username != 'guest') && (!isloggedin()))
 							if ($wantsurl)
 								$redirect_url =  urldecode ($wantsurl) ;
 							else
-								$redirect_url = get_config (NULL, 'joomla_url');
+								$redirect_url = get_config ('auth/joomdle', 'joomla_url');
 						}
 				} 
 				if ($redirect)
@@ -187,7 +185,7 @@ if (($username != 'guest') && (!isloggedin()))
 						else
 						{
 							preg_match('@^(?:https?://)?([^/]+)@i',
-								get_config (NULL, 'joomla_url'), $matches);
+								get_config ('auth/joomdle', 'joomla_url'), $matches);
 							$host = $matches[0];
 
 
@@ -199,17 +197,15 @@ if (($username != 'guest') && (!isloggedin()))
 								/* If no initial slash, it is a joomla relative path. We add path */
 								if ($wantsurl[0] != '/')
 								{
-									$path = parse_url (get_config (NULL, 'joomla_url'), PHP_URL_PATH);
+									$path = parse_url (get_config ('auth/joomdle', 'joomla_url'), PHP_URL_PATH);
 									$wantsurl = $path.'/'.$wantsurl;
 								}
 
 
 								if ($wantsurl)
 									$redirect_url =  $host.urldecode ($wantsurl) ;
-									//$redirect_url =  urldecode ($wantsurl) ;
 								else
-									$redirect_url = get_config (NULL, 'joomla_url');
-									//$redirect_url = get_config (NULL, 'joomla_url');
+									$redirect_url = get_config ('auth/joomdle', 'joomla_url');
 							}
 							else $redirect_url = $wantsurl;
 						}
